@@ -26,7 +26,7 @@ const JoinRoom = () => {
       setLoading(true);
 
       const { data } = await axios.post(
-        "http://localhost:7000/api/rooms/join",
+        `${import.meta.env.VITE_API_URL}/api/rooms/join`,
         {
           roomCode: formData.roomCode.toUpperCase(),
           playerName: formData.playerName,

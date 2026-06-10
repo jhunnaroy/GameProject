@@ -18,9 +18,7 @@ export const SocketProvider = ({
 
   useEffect(() => {
     const newSocket = io(
-      import.meta.env.VITE_SERVER_URL ||
-        "http://localhost:7000",
-      {
+      import.meta.env.VITE_SERVER_URL,      {
         transports: ["websocket"],
       }
     );

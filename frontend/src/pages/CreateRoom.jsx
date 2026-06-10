@@ -28,7 +28,7 @@ const CreateRoom = () => {
       setLoading(true);
 
       const { data } = await axios.post(
-        "http://localhost:7000/api/rooms/create",
+         `${import.meta.env.VITE_API_URL}/rooms/create`,
         {
           hostName: formData.hostName,
           settings: {
