@@ -1,8 +1,9 @@
 import axios from "axios";
 
 const API =
-  import.meta.env.VITE_API_URL ||
-  "http://localhost:7000/api";
+  import.meta.env.VITE_API_URL ;
+
+  
 
 const roomApi = axios.create({
   baseURL: API,

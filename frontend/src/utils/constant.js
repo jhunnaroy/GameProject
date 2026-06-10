@@ -2,15 +2,13 @@
 // API URL
 // ============================
 export const API_URL =
-  import.meta.env.VITE_API_URL ||
-  "http://localhost:7000/api";
+  import.meta.env.VITE_API_URL ;
 
 // ============================
 // Socket URL
 // ============================
 export const SOCKET_URL =
-  import.meta.env.VITE_SERVER_URL ||
-  "http://localhost:7000";
+  import.meta.env.VITE_SERVER_URL;
 
 // ============================
 // Game Settings
