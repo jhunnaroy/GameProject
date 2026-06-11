@@ -12,14 +12,24 @@ export const connectSocket = () => {
 
   if (!socket) {
 
-    socket = io(
-      SOCKET_URL,
-      {
-        transports: [
-          "websocket",
-        ],
-      }
-    );
+  socket = io(SOCKET_URL, {
+  transports: ["websocket", "polling"],
+  reconnection: true,
+  reconnectionAttempts: 10,
+  timeout: 20000,
+});
+
+socket.on("connect", () => {
+  console.log("✅ Connected:", socket.id);
+});
+
+socket.on("connect_error", (err) => {
+  console.log("❌ Connect Error:", err.message);
+});
+
+socket.on("disconnect", (reason) => {
+  console.log("❌ Disconnected:", reason);
+});
 
     socket.on(
       "connect",
