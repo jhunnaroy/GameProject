@@ -28,17 +28,21 @@ const gameHandler = (io, socket) => {
           );
 
         io.to(roomCode).emit(
-          "game_started",
-          room
-        );
+  "word_selected",
+  {
+    drawer: room.currentDrawer,
+    word,
+    hint: "_ ".repeat(word.length),
+  }
+);
 
         const words =
           await getRandomWordsService();
 
-        socket.emit(
-          "word_options",
-          words
-        );
+        io.to(roomCode).emit(
+  "game_started",
+  room
+);
 
       } catch (error) {
 
