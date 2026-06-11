@@ -26,8 +26,7 @@ export const createRoom = async (req, res) => {
       settings,
     });
 
-    console.log("ROOM CREATED:", room.roomCode);
-    console.log("ROOM DATA:", room);
+   
 
     res.status(201).json({
       success: true,
