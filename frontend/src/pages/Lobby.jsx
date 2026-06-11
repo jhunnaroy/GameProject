@@ -10,10 +10,7 @@ const Lobby = () => {
   const [loading, setLoading] = useState(true);
 
   const playerName =
-    localStorage.getItem("playerName");
-
-  const [isHost, setIsHost] =
-    useState(false);
+    localStorage.getItem("playerName") || "";
 
   const copyRoomCode = () => {
     navigator.clipboard.writeText(roomCode);
@@ -31,8 +28,9 @@ const Lobby = () => {
   useEffect(() => {
     const loadRoom = async () => {
       try {
-        const data =
-          await getRoom(roomCode);
+        const data = await getRoom(roomCode);
+
+        console.log("ROOM DATA:", data);
 
         const room =
           data.room || data;
@@ -40,17 +38,6 @@ const Lobby = () => {
         setPlayers(
           room.players || []
         );
-
-        // First player = Host
-        if (
-          room.players &&
-          room.players.length > 0
-        ) {
-          setIsHost(
-            room.players[0].name ===
-              playerName
-          );
-        }
       } catch (error) {
         console.log(error);
       } finally {
@@ -60,13 +47,37 @@ const Lobby = () => {
 
     loadRoom();
 
-    // Refresh every 2 sec
     const interval =
       setInterval(loadRoom, 2000);
 
     return () =>
       clearInterval(interval);
-  }, [roomCode, playerName]);
+  }, [roomCode]);
+
+  // Host = First Player
+  const isHost =
+    players.length > 0 &&
+    players[0]?.name
+      ?.trim()
+      .toLowerCase() ===
+      playerName
+        ?.trim()
+        .toLowerCase();
+
+  console.log(
+    "Current Player:",
+    playerName
+  );
+
+  console.log(
+    "Host:",
+    players[0]?.name
+  );
+
+  console.log(
+    "isHost:",
+    isHost
+  );
 
   return (
     <div className="min-h-screen bg-slate-900 text-white p-4">
@@ -142,7 +153,7 @@ const Lobby = () => {
 
         </div>
 
-        {/* Game Settings */}
+        {/* Settings */}
         <div className="bg-slate-800 rounded-2xl p-6 mb-5">
 
           <h2 className="text-xl font-bold mb-4">
@@ -155,7 +166,6 @@ const Lobby = () => {
               <p className="text-gray-300">
                 Max Players
               </p>
-
               <h3 className="text-xl font-bold">
                 8
               </h3>
@@ -165,7 +175,6 @@ const Lobby = () => {
               <p className="text-gray-300">
                 Rounds
               </p>
-
               <h3 className="text-xl font-bold">
                 3
               </h3>
@@ -175,7 +184,6 @@ const Lobby = () => {
               <p className="text-gray-300">
                 Draw Time
               </p>
-
               <h3 className="text-xl font-bold">
                 60 sec
               </h3>
@@ -198,7 +206,9 @@ const Lobby = () => {
           )}
 
           <button
-            onClick={() => navigate("/")}
+            onClick={() =>
+              navigate("/")
+            }
             className="flex-1 bg-red-600 hover:bg-red-700 py-4 rounded-xl text-lg font-bold"
           >
             Leave Room
