@@ -27,23 +27,15 @@ const GameRoom = () => {
 
   const [players, setPlayers] = useState([]);
   const [messages, setMessages] = useState([]);
-  const [currentWord, setCurrentWord] =
-  useState("");
-
-const [hint, setHint] =
-  useState("_ _ _ _");
-
+ const [words, setWords] = useState([]);
+const [currentWord, setCurrentWord] = useState("");
+const [hint, setHint] = useState("_ _ _ _");
 const [showWordSelection, setShowWordSelection] =
   useState(false);
-
 const [isDrawer, setIsDrawer] =
   useState(false);
 
-  const words = [
-    "Apple",
-    "Tiger",
-    "Cricket",
-  ];
+  
 
   // ==========================
   // Load Room
@@ -88,11 +80,13 @@ const [isDrawer, setIsDrawer] =
 useEffect(() => {
   if (!socket) return;
 
+  // Join Room
   socket.emit("join_room", {
     roomCode,
     playerName,
   });
 
+  // Player Joined
   socket.on(
     "player_joined",
     ({ players }) => {
@@ -100,6 +94,7 @@ useEffect(() => {
     }
   );
 
+  // Player Left
   socket.on(
     "player_left",
     ({ players }) => {
@@ -107,9 +102,11 @@ useEffect(() => {
     }
   );
 
+  // Game Started
   socket.on(
     "game_started",
     (room) => {
+
       setPlayers(room.players || []);
 
       if (
@@ -117,14 +114,32 @@ useEffect(() => {
         playerName
       ) {
         setIsDrawer(true);
-        setShowWordSelection(true);
       } else {
         setIsDrawer(false);
-        setShowWordSelection(false);
       }
+
     }
   );
 
+  // Word Options For Drawer
+  socket.on(
+    "word_options",
+    (wordsList) => {
+
+      console.log(
+        "Received Words:",
+        wordsList
+      );
+
+      if (isDrawer) {
+        setWords(wordsList);
+        setShowWordSelection(true);
+      }
+
+    }
+  );
+
+  // Word Selected
   socket.on(
     "word_selected",
     (data) => {
@@ -137,12 +152,15 @@ useEffect(() => {
         data.drawer ===
         playerName
       ) {
-        setCurrentWord(data.word);
+        setCurrentWord(
+          data.word
+        );
       }
 
     }
   );
 
+  // Wrong Guess
   socket.on(
     "guess_wrong",
     ({ playerName, guess }) => {
@@ -158,9 +176,13 @@ useEffect(() => {
     }
   );
 
+  // Correct Guess
   socket.on(
     "correct_guess",
-    ({ playerName, points }) => {
+    ({
+      playerName,
+      points,
+    }) => {
 
       setMessages((prev) => [
         ...prev,
@@ -185,26 +207,58 @@ useEffect(() => {
     }
   );
 
+  // Leaderboard
   socket.on(
     "leaderboard_update",
     (leaderboard) => {
-      setPlayers(leaderboard);
+      setPlayers(
+        leaderboard
+      );
     }
   );
 
   return () => {
 
-    socket.off("player_joined");
-    socket.off("player_left");
-    socket.off("game_started");
-    socket.off("word_selected");
-    socket.off("guess_wrong");
-    socket.off("correct_guess");
-    socket.off("leaderboard_update");
+    socket.off(
+      "player_joined"
+    );
+
+    socket.off(
+      "player_left"
+    );
+
+    socket.off(
+      "game_started"
+    );
+
+    socket.off(
+      "word_options"
+    );
+
+    socket.off(
+      "word_selected"
+    );
+
+    socket.off(
+      "guess_wrong"
+    );
+
+    socket.off(
+      "correct_guess"
+    );
+
+    socket.off(
+      "leaderboard_update"
+    );
 
   };
 
-}, [roomCode, playerName]);
+}, [
+  roomCode,
+  playerName,
+  socket,
+  isDrawer,
+]);
   // ==========================
   // Select Word
   // ==========================
