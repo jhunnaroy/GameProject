@@ -1,48 +1,71 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import { getRoom } from "../services/roomApi";
 
 const Lobby = () => {
   const { roomCode } = useParams();
   const navigate = useNavigate();
 
-  const [players, setPlayers] = useState([
-    {
-      name: "Jhunna",
-      score: 0,
-      isHost: true,
-    },
-    {
-      name: "Rahul",
-      score: 0,
-      isHost: false,
-    },
-  ]);
+  const [players, setPlayers] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   const playerName =
     localStorage.getItem("playerName");
 
-  const isHost = true;
+  const [isHost, setIsHost] =
+    useState(false);
 
   const copyRoomCode = () => {
-    navigator.clipboard.writeText(
-      roomCode
-    );
-
+    navigator.clipboard.writeText(roomCode);
     alert("Room Code Copied!");
   };
 
   const startGameHandler = () => {
-    navigate(`/game/${roomCode}`);
+    navigate(`/game/${roomCode}`, {
+      state: {
+        playerName,
+      },
+    });
   };
-console.log("playerName =", playerName);
-console.log("host =", players[0]?.name);
-console.log("isHost =", isHost);
+
   useEffect(() => {
-    // Socket Join Room
-    // socket.emit("join_room", {
-    //   roomCode,
-    //   playerName,
-    // });
+    const loadRoom = async () => {
+      try {
+        const data =
+          await getRoom(roomCode);
+
+        const room =
+          data.room || data;
+
+        setPlayers(
+          room.players || []
+        );
+
+        // First player = Host
+        if (
+          room.players &&
+          room.players.length > 0
+        ) {
+          setIsHost(
+            room.players[0].name ===
+              playerName
+          );
+        }
+      } catch (error) {
+        console.log(error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadRoom();
+
+    // Refresh every 2 sec
+    const interval =
+      setInterval(loadRoom, 2000);
+
+    return () =>
+      clearInterval(interval);
   }, [roomCode, playerName]);
 
   return (
@@ -52,7 +75,6 @@ console.log("isHost =", isHost);
 
         {/* Header */}
         <div className="bg-slate-800 rounded-2xl p-6 mb-5">
-
           <h1 className="text-3xl font-bold text-center">
             Game Lobby
           </h1>
@@ -60,14 +82,12 @@ console.log("isHost =", isHost);
           <p className="text-center text-gray-400 mt-2">
             Waiting for players...
           </p>
-
         </div>
 
         {/* Room Info */}
         <div className="bg-slate-800 rounded-2xl p-6 mb-5 flex flex-col md:flex-row justify-between items-center gap-4">
 
           <div>
-
             <h2 className="text-xl font-bold">
               Room Code
             </h2>
@@ -75,7 +95,6 @@ console.log("isHost =", isHost);
             <p className="text-3xl font-bold text-green-400 tracking-widest">
               {roomCode}
             </p>
-
           </div>
 
           <button
@@ -87,39 +106,43 @@ console.log("isHost =", isHost);
 
         </div>
 
-        {/* Players Section */}
+        {/* Players */}
         <div className="bg-slate-800 rounded-2xl p-6 mb-5">
 
           <h2 className="text-2xl font-bold mb-5">
             Players ({players.length})
           </h2>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          {loading ? (
+            <p>Loading...</p>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
 
-            {players.map(
-              (player, index) => (
-                <div
-                  key={index}
-                  className="bg-slate-700 rounded-xl p-4"
-                >
-                  <h3 className="text-lg font-semibold">
-                    {player.name}
-                  </h3>
+              {players.map(
+                (player, index) => (
+                  <div
+                    key={index}
+                    className="bg-slate-700 rounded-xl p-4"
+                  >
+                    <h3 className="text-lg font-semibold">
+                      {player.name}
+                    </h3>
 
-                  {player.isHost && (
-                    <span className="text-yellow-400 text-sm">
-                      👑 Host
-                    </span>
-                  )}
-                </div>
-              )
-            )}
+                    {index === 0 && (
+                      <span className="text-yellow-400 text-sm">
+                        👑 Host
+                      </span>
+                    )}
+                  </div>
+                )
+              )}
 
-          </div>
+            </div>
+          )}
 
         </div>
 
-        {/* Rules Section */}
+        {/* Game Settings */}
         <div className="bg-slate-800 rounded-2xl p-6 mb-5">
 
           <h2 className="text-xl font-bold mb-4">
@@ -162,7 +185,7 @@ console.log("isHost =", isHost);
 
         </div>
 
-        {/* Action Buttons */}
+        {/* Buttons */}
         <div className="flex flex-col md:flex-row gap-4">
 
           {isHost && (
