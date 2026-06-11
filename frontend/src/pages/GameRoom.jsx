@@ -122,22 +122,20 @@ useEffect(() => {
   );
 
   // Word Options For Drawer
-  socket.on(
-    "word_options",
-    (wordsList) => {
+socket.on(
+  "word_options",
+  (wordsList) => {
 
-      console.log(
-        "Received Words:",
-        wordsList
-      );
+    console.log(
+      "Received Words:",
+      wordsList
+    );
 
-      if (isDrawer) {
-        setWords(wordsList);
-        setShowWordSelection(true);
-      }
+    setWords(wordsList);
+    setShowWordSelection(true);
 
-    }
-  );
+  }
+);
 
   // Word Selected
   socket.on(
