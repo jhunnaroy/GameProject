@@ -22,26 +22,22 @@ const gameHandler = (io, socket) => {
 
       try {
 
-        const room =
-          await startGameService(
-            roomCode
-          );
+     const room =
+  await startGameService(
+    roomCode
+  );
 
-        io.to(roomCode).emit(
-  "word_selected",
-  {
-    drawer: room.currentDrawer,
-    word,
-    hint: "_ ".repeat(word.length),
-  }
-);
-
-        const words =
-          await getRandomWordsService();
-
-        io.to(roomCode).emit(
+io.to(roomCode).emit(
   "game_started",
   room
+);
+
+const words =
+  await getRandomWordsService();
+
+io.to(roomCode).emit(
+  "word_options",
+  words
 );
 
       } catch (error) {
@@ -73,18 +69,20 @@ const gameHandler = (io, socket) => {
             word
           );
 
-        io.to(roomCode).emit(
-          "word_selected",
-          {
-            drawer:
-              room.currentDrawer,
+       io.to(roomCode).emit(
+  "word_selected",
+  {
+    drawer:
+      room.currentDrawer,
 
-            hint:
-              "_ ".repeat(
-                word.length
-              ),
-          }
-        );
+    word,
+
+    hint:
+      "_ ".repeat(
+        word.length
+      ),
+  }
+);
 
       } catch (error) {
 
