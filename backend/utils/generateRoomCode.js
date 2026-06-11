@@ -38,3 +38,21 @@ async (length = 6) => {
 
   return roomCode;
 };
+
+import wordCategories from "./words.js";
+
+console.log("wordCategories:", wordCategories);
+
+export const getRandomWords = (count = 3) => {
+  const allWords =
+    Object.values(wordCategories).flat();
+
+  console.log("allWords:", allWords);
+
+  const shuffled =
+    allWords.sort(
+      () => Math.random() - 0.5
+    );
+
+  return shuffled.slice(0, count);
+};

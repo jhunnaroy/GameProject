@@ -16,10 +16,15 @@ const gameHandler = (io, socket) => {
   // ==========================
   // Start Game
   // ==========================
- socket.on("start_game", async ({ roomCode }) => {
+socket.on("start_game", async ({ roomCode }) => {
   try {
+    console.log("START GAME RECEIVED:", roomCode);
+
     const room = await startGameService(roomCode);
 
+    console.log("Drawer:", room.currentDrawer);
+
+    // Send game started event
     io.to(roomCode).emit(
       "game_started",
       room
@@ -38,14 +43,19 @@ const gameHandler = (io, socket) => {
       words
     );
 
+    console.log(
+      "WORD_OPTIONS EMITTED"
+    );
+
   } catch (error) {
-    socket.emit(
-      "error_message",
-      error.message
+    console.log(
+      "START GAME ERROR:",
+      error
     );
   }
 });
-  // ==========================
+
+// ==========================
   // Choose Word
   // ==========================
   socket.on(

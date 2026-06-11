@@ -7,6 +7,7 @@ import {
 
 
 // Create Room
+// Create Room
 export const createRoom = async (req, res) => {
   try {
     const { hostName, settings } = req.body;
@@ -18,16 +19,25 @@ export const createRoom = async (req, res) => {
       });
     }
 
+    console.log("HOST NAME:", hostName);
+
     const room = await createRoomService({
       hostName,
       settings,
     });
 
+    console.log("ROOM CREATED:", room.roomCode);
+    console.log("ROOM DATA:", room);
+
     res.status(201).json({
       success: true,
       room,
     });
+
   } catch (error) {
+
+    console.log("CREATE ROOM ERROR:", error);
+
     res.status(500).json({
       success: false,
       message: error.message,

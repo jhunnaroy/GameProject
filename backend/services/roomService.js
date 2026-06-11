@@ -83,7 +83,7 @@ export const joinRoomService = async ({
   return room;
 };
 
-// ================================
+//==========================
 // Get Single Room
 // ================================
 export const getRoomService = async (

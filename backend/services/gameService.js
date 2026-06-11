@@ -2,6 +2,9 @@ import Room from "../models/Room.js";
 
 import { getRandomWords } from "../utils/getRandomWords.js";
 
+
+console.log("FUNCTION:", getRandomWords);
+
 import {
   calculateScore,
   calculateDrawerScore,
@@ -15,11 +18,12 @@ import {
 // ====================================
 // Get Random Words
 // ====================================
-export const getRandomWordsService =
-async () => {
+export const getRandomWordsService = async () => {
+  const words = getRandomWords(3);
 
-  return getRandomWords(3);
+  console.log("SERVICE WORDS:", words);
 
+  return words;
 };
 
 
