@@ -12,7 +12,7 @@ import { getRoom } from "../services/roomApi";
 
 import {
   connectSocket,
-} from "../services/socket";
+} from "../services/socketService";
 
 const GameRoom = () => {
   const { roomCode } = useParams();
