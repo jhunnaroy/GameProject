@@ -16,41 +16,35 @@ const gameHandler = (io, socket) => {
   // ==========================
   // Start Game
   // ==========================
-  socket.on(
-    "start_game",
-    async ({ roomCode }) => {
+ socket.on("start_game", async ({ roomCode }) => {
+  try {
+    const room = await startGameService(roomCode);
 
-      try {
+    io.to(roomCode).emit(
+      "game_started",
+      room
+    );
 
-     const room =
-  await startGameService(
-    roomCode
-  );
+    const words =
+      await getRandomWordsService();
 
-io.to(roomCode).emit(
-  "game_started",
-  room
-);
+    console.log(
+      "WORDS SENT:",
+      words
+    );
 
-const words =
-  await getRandomWordsService();
+    io.to(roomCode).emit(
+      "word_options",
+      words
+    );
 
-io.to(roomCode).emit(
-  "word_options",
-  words
-);
-
-      } catch (error) {
-
-        socket.emit(
-          "error_message",
-          error.message
-        );
-
-      }
-    }
-  );
-
+  } catch (error) {
+    socket.emit(
+      "error_message",
+      error.message
+    );
+  }
+});
   // ==========================
   // Choose Word
   // ==========================
