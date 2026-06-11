@@ -120,7 +120,10 @@ useEffect(() => {
 
     }
   );
-
+console.log(
+  "WORDS SENT:",
+  words
+);
   // Word Options For Drawer
 socket.on(
   "word_options",

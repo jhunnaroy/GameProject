@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { getRoom } from "../services/roomApi";
+import { connectSocket } from "../services/socketService";
 
 const Lobby = () => {
   const { roomCode } = useParams();
@@ -17,13 +18,22 @@ const Lobby = () => {
     alert("Room Code Copied!");
   };
 
-  const startGameHandler = () => {
-    navigate(`/game/${roomCode}`, {
-      state: {
-        playerName,
-      },
-    });
-  };
+
+  const socket = connectSocket();
+
+const startGameHandler = () => {
+
+  socket.emit("start_game", {
+    roomCode,
+  });
+
+  navigate(`/game/${roomCode}`, {
+    state: {
+      playerName,
+    },
+  });
+
+};
 
   useEffect(() => {
     const loadRoom = async () => {
